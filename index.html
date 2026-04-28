@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FARMAISH RESTAURANT – Order Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0a;
+    --surface: #1a1610;
+    --card: #231f18;
+    --border: #3a3228;
+    --gold: #e8b84b;
+    --gold-light: #f5d07a;
+    --green: #4caf50;
+    --red: #e05a4e;
+    --text: #f0ebe0;
+    --muted: #8a7f6e;
+    --white: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(232,184,75,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(76,175,80,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 48px 20px 36px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 40px rgba(232,184,75,0.3);
+  }
+  .logo-sub {
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    padding: 24px 20px;
+    position: relative; z-index: 10;
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--green); }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 600;
+    transition: all 0.3s;
+  }
+  .step.active .step-num { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+  .step.done .step-num { background: var(--green); color: var(--white); border-color: var(--green); }
+  .step-divider { width: 40px; height: 1px; background: var(--border); margin: 0 8px; align-self: center; }
+
+  /* ── MAIN CONTAINER ── */
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    position: relative; z-index: 10;
+  }
+
+  /* ── SCREEN ── */
+  .screen { display: none; animation: fadeUp 0.4s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-top: 24px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  .card-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* ── FORM ── */
+  .field { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  input, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    -webkit-appearance: none;
+  }
+  input:focus, textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(232,184,75,0.12);
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: block; width: 100%;
+    padding: 15px 24px;
+    border-radius: 10px;
+    border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.25s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), #c99a2e);
+    color: var(--bg);
+    box-shadow: 0 4px 20px rgba(232,184,75,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(232,184,75,0.35);
+  }
+  .btn-secondary {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    margin-top: 12px;
+    font-size: 0.8rem;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── MENU ── */
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 28px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-item {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .menu-item:hover { border-color: var(--gold); }
+  .menu-item.selected {
+    border-color: var(--gold);
+    background: rgba(232,184,75,0.06);
+  }
+  .item-emoji { font-size: 2rem; flex-shrink: 0; width: 48px; text-align: center; }
+  .item-info { flex: 1; }
+  .item-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .item-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+  .item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .item-check {
+    position: absolute; top: 10px; right: 10px;
+    width: 20px; height: 20px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .menu-item.selected .item-check { opacity: 1; }
+
+  /* qty controls */
+  .qty-controls {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 10px;
+  }
+  .qty-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .qty-num { font-weight: 600; min-width: 20px; text-align: center; }
+
+  /* ── ORDER SUMMARY ── */
+  .summary-row {
+    display: flex; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-total {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .summary-label { color: var(--muted); }
+
+  /* ── PAYMENT ── */
+  .upi-box {
+    background: var(--surface);
+    border: 1.5px dashed var(--gold);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+  }
+  .upi-icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .upi-id {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .upi-note { font-size: 0.78rem; color: var(--muted); }
+
+  .btn-gpay {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: #fff;
+    color: #1a1a1a;
+    padding: 15px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    width: 100%;
+    letter-spacing: 0.02em;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+  }
+  .btn-gpay:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,255,255,0.2); }
+  .gpay-logo { font-size: 1.4rem; }
+
+  /* ── CONFIRMATION ── */
+  .confirm-badge {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 30px rgba(76,175,80,0.3);
+  }
+  .confirm-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--green);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .confirm-sub { text-align: center; color: var(--muted); font-size: 0.88rem; margin-bottom: 28px; }
+  .order-details {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .detail-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.88rem;
+    padding: 6px 0;
+    color: var(--muted);
+  }
+  .detail-row span:last-child { color: var(--text); font-weight: 500; }
+  .wa-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: #25D366;
+    color: #fff;
+    padding: 15px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 600;
+    width: 100%;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.25);
+    text-decoration: none;
+    margin-bottom: 12px;
+  }
+  .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.35); }
+  .wa-icon { font-size: 1.3rem; }
+
+  /* ── TAGS & MISC ── */
+  .veg-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: rgba(76,175,80,0.15);
+    color: var(--green);
+    border: 1px solid rgba(76,175,80,0.3);
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.05em;
+  }
+  .nonveg-tag {
+    background: rgba(224,90,78,0.15);
+    color: var(--red);
+    border-color: rgba(224,90,78,0.3);
+  }
+
+  .error-msg {
+    color: var(--red);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  .empty-cart {
+    text-align: center;
+    color: var(--muted);
+    padding: 20px 0;
+    font-size: 0.88rem;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">🌾 FARMAISH</div>
+  <div class="logo-sub">Restaurant · Farm Fresh · Order Online</div>
+</header>
+
+<div class="steps" id="stepBar">
+  <div class="step active" id="s1"><div class="step-num">1</div><span>Login</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s2"><div class="step-num">2</div><span>Menu</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s3"><div class="step-num">3</div><span>Payment</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s4"><div class="step-num">4</div><span>Confirm</span></div>
+</div>
+
+<div class="container">
+
+  <!-- ── SCREEN 1: SIGN IN ── -->
+  <div class="screen active" id="screen1">
+    <div class="card">
+      <div class="card-title">Welcome 👋</div>
+      <div class="card-subtitle">Enter your details to start ordering from Farmaish Restaurant.</div>
+
+      <div class="field">
+        <label>Your Full Name</label>
+        <input type="text" id="inp-name" placeholder="e.g. Ravi Kumar" />
+      </div>
+      <div class="field">
+        <label>Mobile Number</label>
+        <input type="tel" id="inp-phone" placeholder="10-digit mobile number" maxlength="10" />
+      </div>
+      <div class="field">
+        <label>Delivery Address</label>
+        <textarea id="inp-addr" placeholder="House no., Street, Area, City..."></textarea>
+      </div>
+
+      <div class="error-msg" id="err1">Please fill all fields correctly.</div>
+
+      <button class="btn btn-primary" onclick="goToMenu()">Continue to Menu →</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: MENU ── -->
+  <div class="screen" id="screen2">
+    <div class="card">
+      <div class="card-title">Our Menu 🍽️</div>
+      <div class="card-subtitle">Fresh from the farm, made with love. Select your items below.</div>
+
+      <!-- STARTERS -->
+      <div class="section-label">🌿 Starters</div>
+
+      <div class="menu-item" id="item-1" onclick="toggleItem(1)">
+        <div class="item-emoji">🥗</div>
+        <div class="item-info">
+          <div class="item-name">Farm Fresh Salad <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Seasonal greens, cherry tomatoes, cucumber, lemon dressing</div>
+          <div class="qty-controls" id="qty-1" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(1,-1)">−</button>
+            <span class="qty-num" id="qnum-1">1</span>
+            <button class="qty-btn" onclick="changeQty(1,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹120</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="menu-item" id="item-2" onclick="toggleItem(2)">
+        <div class="item-emoji">🌽</div>
+        <div class="item-info">
+          <div class="item-name">Grilled Sweet Corn <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Butter-roasted corn, masala sprinkle, lime squeeze</div>
+          <div class="qty-controls" id="qty-2" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(2,-1)">−</button>
+            <span class="qty-num" id="qnum-2">1</span>
+            <button class="qty-btn" onclick="changeQty(2,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹80</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="menu-item" id="item-3" onclick="toggleItem(3)">
+        <div class="item-emoji">🍗</div>
+        <div class="item-info">
+          <div class="item-name">Tandoori Chicken Starter <span class="veg-tag nonveg-tag">NON-VEG</span></div>
+          <div class="item-desc">Marinated chicken pieces, smoky tandoor finish, mint chutney</div>
+          <div class="qty-controls" id="qty-3" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(3,-1)">−</button>
+            <span class="qty-num" id="qnum-3">1</span>
+            <button class="qty-btn" onclick="changeQty(3,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹220</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <!-- MAINS -->
+      <div class="section-label">🍛 Main Course</div>
+
+      <div class="menu-item" id="item-4" onclick="toggleItem(4)">
+        <div class="item-emoji">🥘</div>
+        <div class="item-info">
+          <div class="item-name">Farmaish Dal Makhani <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Slow-cooked black lentils, butter, cream, served with naan</div>
+          <div class="qty-controls" id="qty-4" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(4,-1)">−</button>
+            <span class="qty-num" id="qnum-4">1</span>
+            <button class="qty-btn" onclick="changeQty(4,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹180</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="menu-item" id="item-5" onclick="toggleItem(5)">
+        <div class="item-emoji">🍚</div>
+        <div class="item-info">
+          <div class="item-name">Village Chicken Biryani <span class="veg-tag nonveg-tag">NON-VEG</span></div>
+          <div class="item-desc">Aromatic basmati rice, free-range chicken, farmer spices, raita</div>
+          <div class="qty-controls" id="qty-5" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(5,-1)">−</button>
+            <span class="qty-num" id="qnum-5">1</span>
+            <button class="qty-btn" onclick="changeQty(5,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹280</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="menu-item" id="item-6" onclick="toggleItem(6)">
+        <div class="item-emoji">🫓</div>
+        <div class="item-info">
+          <div class="item-name">Paneer Butter Masala + Roti <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Cottage cheese in rich tomato gravy, 4 whole wheat rotis</div>
+          <div class="qty-controls" id="qty-6" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(6,-1)">−</button>
+            <span class="qty-num" id="qnum-6">1</span>
+            <button class="qty-btn" onclick="changeQty(6,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹240</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <!-- DRINKS & DESSERTS -->
+      <div class="section-label">🥤 Drinks & Sweets</div>
+
+      <div class="menu-item" id="item-7" onclick="toggleItem(7)">
+        <div class="item-emoji">🥛</div>
+        <div class="item-info">
+          <div class="item-name">Fresh Lassi <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Thick yogurt-based drink, sweet or salted, rose option</div>
+          <div class="qty-controls" id="qty-7" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(7,-1)">−</button>
+            <span class="qty-num" id="qnum-7">1</span>
+            <button class="qty-btn" onclick="changeQty(7,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹70</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="menu-item" id="item-8" onclick="toggleItem(8)">
+        <div class="item-emoji">🍮</div>
+        <div class="item-info">
+          <div class="item-name">Gajar Halwa <span class="veg-tag">VEG</span></div>
+          <div class="item-desc">Slow-cooked carrot dessert, ghee, cashews, cardamom</div>
+          <div class="qty-controls" id="qty-8" style="display:none" onclick="event.stopPropagation()">
+            <button class="qty-btn" onclick="changeQty(8,-1)">−</button>
+            <span class="qty-num" id="qnum-8">1</span>
+            <button class="qty-btn" onclick="changeQty(8,1)">+</button>
+          </div>
+        </div>
+        <div class="item-price">₹90</div>
+        <div class="item-check">✓</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- CART SUMMARY -->
+      <div id="cartSummaryArea">
+        <div class="empty-cart" id="emptyCartMsg">No items selected yet. Tap any item to add it to your order.</div>
+        <div id="cartRows"></div>
+        <div id="cartTotal" style="display:none">
+          <div class="summary-row">
+            <span class="summary-label">Subtotal</span>
+            <span id="subtotalAmt"></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Delivery charge</span>
+            <span>₹30</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Total</span>
+            <span class="summary-total" id="totalAmt"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="error-msg" id="err2">Please select at least one item.</div>
+
+      <button class="btn btn-primary" style="margin-top:20px" onclick="goToPayment()">Proceed to Payment →</button>
+      <button class="btn btn-secondary" onclick="goBack(1)">← Back</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: PAYMENT ── -->
+  <div class="screen" id="screen3">
+    <div class="card">
+      <div class="card-title">Payment 💳</div>
+      <div class="card-subtitle">Review your order and complete payment via Google Pay.</div>
+
+      <div id="paymentOrderSummary"></div>
+
+      <div class="divider"></div>
+
+      <div class="upi-box">
+        <div class="upi-icon">📱</div>
+        <div class="upi-id">9900127866@okbizaxis</div>
+        <div class="upi-note">Google Pay · FARMAISH RESTAURANT</div>
+      </div>
+
+      <button class="btn-gpay" onclick="openGooglePay()">
+        <span class="gpay-logo">G</span>
+        <span>Pay with Google Pay</span>
+      </button>
+
+      <div class="divider"></div>
+      <p style="font-size:0.78rem;color:var(--muted);text-align:center;line-height:1.6">
+        You will be redirected to Google Pay. After completing the payment, tap the button below to confirm your order.
+      </p>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="goToConfirmation()">✅ I've Paid – Confirm Order</button>
+      <button class="btn btn-secondary" onclick="goBack(2)">← Back to Menu</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 4: CONFIRMATION ── -->
+  <div class="screen" id="screen4">
+    <div class="card">
+      <div class="confirm-badge">✓</div>
+      <div class="confirm-title">Order Confirmed!</div>
+      <div class="confirm-sub">Thank you for ordering from Farmaish Restaurant.<br>Your food is being prepared 🌾</div>
+
+      <div class="order-details" id="confirmDetails"></div>
+
+      <a class="wa-btn" id="waLink" href="#" target="_blank">
+        <span class="wa-icon">💬</span>
+        <span>Notify Restaurant on WhatsApp</span>
+      </a>
+
+      <button class="btn btn-secondary" onclick="restartOrder()">Place Another Order</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──
+const MENU = {
+  1: { name: "Farm Fresh Salad",           price: 120 },
+  2: { name: "Grilled Sweet Corn",         price: 80  },
+  3: { name: "Tandoori Chicken Starter",   price: 220 },
+  4: { name: "Farmaish Dal Makhani",       price: 180 },
+  5: { name: "Village Chicken Biryani",    price: 280 },
+  6: { name: "Paneer Butter Masala+Roti",  price: 240 },
+  7: { name: "Fresh Lassi",               price: 70  },
+  8: { name: "Gajar Halwa",              price: 90  },
+};
+
+const DELIVERY = 30;
+const WA_NUMBER = "919742645678";
+const GPAY_UPI = "9900127866@okbizaxis";
+const RESTAURANT = "FARMAISH RESTAURANT";
+
+let cart = {};   // { itemId: qty }
+let customer = {};
+let orderId = "";
+
+// ── STEP MANAGEMENT ──
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const s = document.getElementById('s'+i);
+    s.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+    const num = s.querySelector('.step-num');
+    num.textContent = i < n ? '✓' : i;
+  }
+}
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen'+n).classList.add('active');
+  setStep(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── SCREEN 1 → 2 ──
+function goToMenu() {
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const addr = document.getElementById('inp-addr').value.trim();
+  const err = document.getElementById('err1');
+  if (!name || phone.length !== 10 || !/^\d{10}$/.test(phone) || !addr) {
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+  customer = { name, phone, addr };
+  showScreen(2);
+}
+
+// ── MENU LOGIC ──
+function toggleItem(id) {
+  if (cart[id]) {
+    delete cart[id];
+    document.getElementById('item-'+id).classList.remove('selected');
+    document.getElementById('qty-'+id).style.display = 'none';
+  } else {
+    cart[id] = 1;
+    document.getElementById('item-'+id).classList.add('selected');
+    document.getElementById('qty-'+id).style.display = 'flex';
+    document.getElementById('qnum-'+id).textContent = 1;
+  }
+  renderCart();
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id] = Math.max(1, cart[id] + delta);
+  document.getElementById('qnum-'+id).textContent = cart[id];
+  renderCart();
+}
+
+function calcSubtotal() {
+  return Object.entries(cart).reduce((s, [id, qty]) => s + MENU[id].price * qty, 0);
+}
+
+function renderCart() {
+  const ids = Object.keys(cart);
+  const empty = document.getElementById('emptyCartMsg');
+  const rows = document.getElementById('cartRows');
+  const total = document.getElementById('cartTotal');
+  if (ids.length === 0) {
+    empty.style.display = 'block';
+    rows.innerHTML = '';
+    total.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  total.style.display = 'block';
+  rows.innerHTML = ids.map(id => `
+    <div class="summary-row">
+      <span>${MENU[id].name} × ${cart[id]}</span>
+      <span>₹${MENU[id].price * cart[id]}</span>
+    </div>`).join('');
+  const sub = calcSubtotal();
+  document.getElementById('subtotalAmt').textContent = '₹' + sub;
+  document.getElementById('totalAmt').textContent = '₹' + (sub + DELIVERY);
+}
+
+// ── SCREEN 2 → 3 ──
+function goToPayment() {
+  if (Object.keys(cart).length === 0) {
+    document.getElementById('err2').classList.add('show');
+    return;
+  }
+  document.getElementById('err2').classList.remove('show');
+  orderId = 'FRM' + Date.now().toString().slice(-6);
+
+  const sub = calcSubtotal();
+  const total = sub + DELIVERY;
+
+  const items = Object.entries(cart).map(([id, qty]) =>
+    `<div class="summary-row"><span>${MENU[id].name} × ${qty}</span><span>₹${MENU[id].price * qty}</span></div>`
+  ).join('');
+
+  document.getElementById('paymentOrderSummary').innerHTML = `
+    <div style="margin-bottom:4px;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Order #${orderId}</div>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:14px">For: ${customer.name} · 📱 ${customer.phone}</div>
+    ${items}
+    <div class="summary-row"><span class="summary-label">Delivery</span><span>₹${DELIVERY}</span></div>
+    <div class="summary-row"><span class="summary-label" style="font-weight:600;color:var(--text)">Total Payable</span><span class="summary-total">₹${total}</span></div>
+  `;
+  showScreen(3);
+}
+
+// ── GOOGLE PAY ──
+function openGooglePay() {
+  const total = calcSubtotal() + DELIVERY;
+  const note = encodeURIComponent(`Farmaish Order #${orderId} - ${customer.name}`);
+  // UPI deep link
+  const upiUrl = `upi://pay?pa=${GPAY_UPI}&pn=${encodeURIComponent(RESTAURANT)}&am=${total}&cu=INR&tn=${note}`;
+  // Try deep link first; also provide a web fallback
+  const gpayIntentAndroid = `intent://pay?pa=${GPAY_UPI}&pn=${encodeURIComponent(RESTAURANT)}&am=${total}&cu=INR&tn=${note}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+  const isAndroid = /android/i.test(navigator.userAgent);
+  window.location.href = isAndroid ? gpayIntentAndroid : upiUrl;
+  setTimeout(() => {
+    // fallback if app not installed
+    window.open(`https://pay.google.com/`, '_blank');
+  }, 2000);
+}
+
+// ── SCREEN 3 → 4 ──
+function goToConfirmation() {
+  const sub = calcSubtotal();
+  const total = sub + DELIVERY;
+  const itemList = Object.entries(cart).map(([id, qty]) => `${MENU[id].name} × ${qty}`).join(', ');
+
+  document.getElementById('confirmDetails').innerHTML = `
+    <div class="detail-row"><span>Order ID</span><span>#${orderId}</span></div>
+    <div class="detail-row"><span>Customer</span><span>${customer.name}</span></div>
+    <div class="detail-row"><span>Mobile</span><span>${customer.phone}</span></div>
+    <div class="detail-row"><span>Delivery to</span><span style="max-width:200px;text-align:right">${customer.addr}</span></div>
+    <div class="detail-row"><span>Items</span><span style="max-width:200px;text-align:right">${itemList}</span></div>
+    <div class="detail-row"><span>Amount Paid</span><span style="color:var(--gold);font-weight:700">₹${total}</span></div>
+  `;
+
+  // WhatsApp message
+  const waMsg = encodeURIComponent(
+    ` *New Order - FARMAISH RESTAURANT*\n\n` +
+    `*Order ID:* #${orderId}\n` +
+    `*Customer:* ${customer.name}\n` +
+    `*Mobile:* ${customer.phone}\n` +
+    `*Address:* ${customer.addr}\n\n` +
+    `*Items Ordered:*\n` +
+    Object.entries(cart).map(([id, qty]) => `• ${MENU[id].name} × ${qty} = ₹${MENU[id].price * qty}`).join('\n') +
+    `\n\n*Delivery Charge:* ₹${DELIVERY}` +
+    `\n*Total Paid:* ₹${total}` +
+    `\n\n✅ Payment done via Google Pay (UPI: ${GPAY_UPI})`
+  );
+  document.getElementById('waLink').href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+
+  showScreen(4);
+}
+
+function goBack(to) { showScreen(to); }
+
+function restartOrder() {
+  cart = {};
+  customer = {};
+  orderId = '';
+  document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.qty-controls').forEach(el => el.style.display = 'none');
+  ['inp-name','inp-phone','inp-addr'].forEach(id => document.getElementById(id).value = '');
+  renderCart();
+  showScreen(1);
+}
+</script>
+</body>
+</html>
