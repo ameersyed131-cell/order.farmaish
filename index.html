@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FARMAISH RESTAURANT – Order Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0d0a;
+    --surface: #1a1610;
+    --card: #231f18;
+    --border: #3a3228;
+    --gold: #e8b84b;
+    --gold-light: #f5d07a;
+    --green: #4caf50;
+    --red: #e05a4e;
+    --text: #f0ebe0;
+    --muted: #8a7f6e;
+    --white: #ffffff;
+    --phonepe: #5f259f;
+    --phonepe-light: #7c3abf;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(232,184,75,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(76,175,80,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 36px 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px;
+  }
+  .logo-mark {
+    display: inline-block;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    text-shadow: 0 0 40px rgba(232,184,75,0.3);
+  }
+  .logo-sub { font-size: 0.75rem; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .admin-link-btn {
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .admin-link-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── STEPS ── */
+  .steps { display: flex; justify-content: center; gap: 0; padding: 20px 20px; position: relative; z-index: 10; }
+  .step { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: color 0.3s; }
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--green); }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; transition: all 0.3s; }
+  .step.active .step-num { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+  .step.done .step-num { background: var(--green); color: var(--white); border-color: var(--green); }
+  .step-divider { width: 32px; height: 1px; background: var(--border); margin: 0 6px; align-self: center; }
+
+  /* ── MAIN CONTAINER ── */
+  .container { max-width: 600px; margin: 0 auto; padding: 0 20px 60px; position: relative; z-index: 10; }
+  .screen { display: none; animation: fadeUp 0.4s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-top: 20px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold-light); margin-bottom: 6px; }
+  .card-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+
+  /* ── FORM ── */
+  .field { margin-bottom: 18px; }
+  label { display: block; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; font-weight: 500; }
+  input[type=text], input[type=tel], input[type=email], input[type=password], textarea, select {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.93rem;
+    outline: none; transition: border-color 0.25s, box-shadow 0.25s; -webkit-appearance: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(232,184,75,0.12); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  textarea { resize: vertical; min-height: 76px; }
+  select option { background: var(--card); }
+
+  /* ── BUTTONS ── */
+  .btn { display: block; width: 100%; padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.25s; }
+  .btn-primary { background: linear-gradient(135deg, var(--gold), #c99a2e); color: var(--bg); box-shadow: 0 4px 20px rgba(232,184,75,0.25); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,184,75,0.35); }
+  .btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--muted); margin-top: 10px; font-size: 0.8rem; }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-danger { background: linear-gradient(135deg, var(--red), #b33); color: #fff; }
+  .btn-danger:hover { transform: translateY(-2px); }
+  .btn-sm { padding: 8px 14px; font-size: 0.75rem; border-radius: 8px; width: auto; display: inline-block; }
+
+  /* ── MENU ── */
+  .section-label { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin: 24px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .menu-item { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+  .menu-item:hover { border-color: var(--gold); }
+  .menu-item.selected { border-color: var(--gold); background: rgba(232,184,75,0.06); }
+  .menu-item.unavailable { opacity: 0.45; pointer-events: none; }
+  .unavail-badge { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; }
+  .item-emoji { font-size: 1.8rem; flex-shrink: 0; width: 44px; text-align: center; }
+  .item-info { flex: 1; }
+  .item-name { font-weight: 600; font-size: 0.92rem; color: var(--text); margin-bottom: 2px; }
+  .item-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.4; }
+  .item-price { font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+  .item-check { position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; background: var(--gold); color: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; opacity: 0; transition: opacity 0.2s; }
+  .menu-item.selected .item-check { opacity: 1; }
+  .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .qty-num { font-weight: 600; min-width: 18px; text-align: center; }
+
+  /* ── CART ── */
+  .summary-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-total { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--gold); font-weight: 700; }
+  .summary-label { color: var(--muted); }
+  .empty-cart { text-align: center; color: var(--muted); padding: 18px 0; font-size: 0.86rem; }
+
+  /* ── PAYMENT ── */
+  .payment-methods { display: flex; flex-direction: column; gap: 12px; margin: 18px 0; }
+  .pay-option { background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 16px 18px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: all 0.2s; }
+  .pay-option:hover { border-color: var(--gold); }
+  .pay-option.selected { border-color: var(--gold); background: rgba(232,184,75,0.06); }
+  .pay-option-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .pay-option-info { flex: 1; }
+  .pay-option-name { font-weight: 600; font-size: 0.95rem; }
+  .pay-option-desc { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .pay-radio { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .pay-option.selected .pay-radio { border-color: var(--gold); background: var(--gold); }
+  .pay-option.selected .pay-radio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--bg); }
+
+  .upi-box { background: var(--surface); border: 1.5px dashed var(--gold); border-radius: 12px; padding: 18px; text-align: center; margin: 14px 0; }
+  .upi-id { font-size: 1rem; font-weight: 600; color: var(--gold-light); letter-spacing: 0.05em; margin: 6px 0 3px; }
+  .upi-note { font-size: 0.76rem; color: var(--muted); }
+  .btn-gpay { display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1a1a1a; padding: 14px 24px; border-radius: 10px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; width: 100%; transition: all 0.25s; box-shadow: 0 4px 20px rgba(255,255,255,0.1); }
+  .btn-gpay:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,255,255,0.2); }
+  .btn-phonepe { display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, var(--phonepe), var(--phonepe-light)); color: #fff; padding: 14px 24px; border-radius: 10px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 700; width: 100%; transition: all 0.25s; box-shadow: 0 4px 20px rgba(95,37,159,0.3); }
+  .btn-phonepe:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(95,37,159,0.4); }
+
+  /* ── CONFIRMATION ── */
+  .confirm-badge { width: 68px; height: 68px; background: linear-gradient(135deg, #4caf50, #2e7d32); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 18px; box-shadow: 0 0 30px rgba(76,175,80,0.3); }
+  .confirm-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--green); text-align: center; margin-bottom: 6px; }
+  .confirm-sub { text-align: center; color: var(--muted); font-size: 0.86rem; margin-bottom: 24px; }
+  .order-details { background: var(--surface); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .detail-row { display: flex; justify-content: space-between; font-size: 0.86rem; padding: 5px 0; color: var(--muted); }
+  .detail-row span:last-child { color: var(--text); font-weight: 500; }
+  .wa-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: #25D366; color: #fff; padding: 14px 24px; border-radius: 10px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 600; width: 100%; letter-spacing: 0.05em; text-transform: uppercase; transition: all 0.25s; box-shadow: 0 4px 20px rgba(37,211,102,0.25); text-decoration: none; margin-bottom: 10px; }
+  .wa-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,211,102,0.35); }
+
+  /* ── TAGS ── */
+  .veg-tag { display: inline-block; font-size: 0.62rem; padding: 2px 6px; border-radius: 20px; background: rgba(76,175,80,0.15); color: var(--green); border: 1px solid rgba(76,175,80,0.3); margin-left: 5px; vertical-align: middle; letter-spacing: 0.05em; }
+  .nonveg-tag { background: rgba(224,90,78,0.15); color: var(--red); border-color: rgba(224,90,78,0.3); }
+
+  .error-msg { color: var(--red); font-size: 0.79rem; margin-top: 7px; display: none; }
+  .error-msg.show { display: block; }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ═══════════════════════════════════════════════════
+     ADMIN PANEL
+  ═══════════════════════════════════════════════════ */
+  #adminOverlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 1000;
+    background: var(--bg);
+    overflow-y: auto;
+    animation: fadeUp 0.3s ease;
+  }
+  #adminOverlay.active { display: block; }
+
+  .admin-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .admin-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold); font-weight: 700; }
+  .admin-badge { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; background: rgba(232,184,75,0.15); color: var(--gold); padding: 3px 9px; border-radius: 20px; border: 1px solid rgba(232,184,75,0.3); }
+  .admin-close { margin-left: auto; background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 7px 14px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .admin-close:hover { border-color: var(--red); color: var(--red); }
+
+  .admin-nav { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 24px; overflow-x: auto; background: var(--surface); }
+  .admin-nav::-webkit-scrollbar { height: 0; }
+  .admin-tab { padding: 14px 18px; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; font-family: 'DM Sans', sans-serif; background: none; border-top: none; border-left: none; border-right: none; }
+  .admin-tab:hover { color: var(--gold-light); }
+  .admin-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .admin-body { max-width: 960px; margin: 0 auto; padding: 28px 24px; }
+  .admin-panel { display: none; animation: fadeUp 0.3s ease; }
+  .admin-panel.active { display: block; }
+
+  .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+  .stat-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .stat-value { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--gold); font-weight: 700; }
+  .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+  .admin-section-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--gold-light); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  /* Orders table */
+  .orders-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .orders-table th { text-align: left; padding: 10px 12px; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .orders-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .orders-table tr:last-child td { border-bottom: none; }
+  .orders-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .status-badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.68rem; letter-spacing: 0.05em; font-weight: 600; }
+  .status-new { background: rgba(232,184,75,0.15); color: var(--gold); }
+  .status-preparing { background: rgba(76,175,80,0.15); color: var(--green); }
+  .status-delivered { background: rgba(138,127,110,0.2); color: var(--muted); }
+  .status-cancelled { background: rgba(224,90,78,0.15); color: var(--red); }
+
+  /* Menu management */
+  .admin-menu-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+  .admin-menu-item .item-emoji { font-size: 1.5rem; }
+  .admin-menu-item .item-info { flex: 1; }
+  .admin-menu-item .item-name { font-weight: 600; font-size: 0.9rem; }
+  .admin-menu-item .item-price-small { font-size: 0.8rem; color: var(--gold); margin-top: 2px; }
+  .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+  .toggle-slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; top: 3px; border-radius: 50%; background: var(--muted); transition: all 0.2s; }
+  .toggle-switch input:checked + .toggle-slider { background: var(--green); }
+  .toggle-switch input:checked + .toggle-slider::before { background: #fff; transform: translateX(20px); }
+
+  /* Customer list */
+  .customer-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+  .customer-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #c99a2e); color: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+  .customer-info { flex: 1; }
+  .customer-name { font-weight: 600; font-size: 0.9rem; }
+  .customer-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .customer-stats { text-align: right; font-size: 0.78rem; color: var(--muted); }
+  .customer-spend { color: var(--gold); font-weight: 600; font-size: 0.9rem; }
+
+  /* Add item form */
+  .add-item-form { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-top: 18px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+
+  /* Login overlay */
+  #adminLogin {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(15,13,10,0.96);
+    align-items: center; justify-content: center;
+    animation: fadeUp 0.3s ease;
+  }
+  #adminLogin.active { display: flex; }
+  .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 380px; }
+  .login-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold-light); margin-bottom: 6px; }
+  .login-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 26px; }
+
+  /* Sales chart */
+  .chart-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 0.8rem; }
+  .chart-bar-label { width: 60px; color: var(--muted); text-align: right; flex-shrink: 0; }
+  .chart-bar-track { flex: 1; height: 24px; background: var(--surface); border-radius: 6px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), #c99a2e); border-radius: 6px; transition: width 1s ease; display: flex; align-items: center; padding-left: 8px; font-size: 0.72rem; color: var(--bg); font-weight: 600; }
+  .chart-bar-amount { width: 70px; text-align: right; color: var(--gold); font-weight: 600; flex-shrink: 0; }
+
+  .table-wrap { overflow-x: auto; }
+  .no-data { text-align: center; color: var(--muted); padding: 30px; font-size: 0.86rem; }
+
+  .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div>
+    <div class="logo-mark">🌾 FARMAISH</div>
+    <div class="logo-sub">Restaurant · Farm Fresh · Order Online</div>
+  </div>
+  <button class="admin-link-btn" onclick="showAdminLogin()">⚙ Admin</button>
+</header>
+
+<!-- ── STEP BAR ── -->
+<div class="steps" id="stepBar">
+  <div class="step active" id="s1"><div class="step-num">1</div><span>Info</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s2"><div class="step-num">2</div><span>Menu</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s3"><div class="step-num">3</div><span>Payment</span></div>
+  <div class="step-divider"></div>
+  <div class="step" id="s4"><div class="step-num">4</div><span>Confirm</span></div>
+</div>
+
+<!-- ── CUSTOMER FLOW ── -->
+<div class="container">
+
+  <!-- SCREEN 1: INFO -->
+  <div class="screen active" id="screen1">
+    <div class="card">
+      <div class="card-title">Welcome 👋</div>
+      <div class="card-subtitle">Enter your details to start ordering fresh from Farmaish Restaurant.</div>
+      <div class="field"><label>Full Name</label><input type="text" id="inp-name" placeholder="e.g. Ravi Kumar" /></div>
+      <div class="field"><label>Mobile Number</label><input type="tel" id="inp-phone" placeholder="10-digit number" maxlength="10" /></div>
+      <div class="field"><label>Delivery Address</label><textarea id="inp-addr" placeholder="House no., Street, Area, City..."></textarea></div>
+      <div class="error-msg" id="err1">⚠ Please fill all fields correctly. Phone must be 10 digits.</div>
+      <button class="btn btn-primary" onclick="goToMenu()">Continue to Menu →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: MENU -->
+  <div class="screen" id="screen2">
+    <div class="card">
+      <div class="card-title">Our Menu 🍽️</div>
+      <div class="card-subtitle">Fresh from the farm, made with love. Select your items below.</div>
+      <div id="menuList"></div>
+      <div class="divider"></div>
+      <div id="emptyCartMsg" class="empty-cart">No items selected yet. Tap any item to add it.</div>
+      <div id="cartRows"></div>
+      <div id="cartTotal" style="display:none">
+        <div class="summary-row"><span class="summary-label">Subtotal</span><span id="subtotalAmt"></span></div>
+        <div class="summary-row"><span class="summary-label">Delivery charge</span><span>₹30</span></div>
+        <div class="summary-row"><span class="summary-label" style="font-weight:600;color:var(--text)">Total</span><span class="summary-total" id="totalAmt"></span></div>
+      </div>
+      <div class="error-msg" id="err2">⚠ Please select at least one item.</div>
+      <button class="btn btn-primary" style="margin-top:18px" onclick="goToPayment()">Proceed to Payment →</button>
+      <button class="btn btn-secondary" onclick="goBack(1)">← Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: PAYMENT -->
+  <div class="screen" id="screen3">
+    <div class="card">
+      <div class="card-title">Payment 💳</div>
+      <div class="card-subtitle">Review your order and choose a payment method.</div>
+      <div id="paymentOrderSummary"></div>
+      <div class="divider"></div>
+      <div style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Choose Payment Method</div>
+      <div class="payment-methods">
+        <div class="pay-option selected" id="pay-gpay" onclick="selectPayment('gpay')">
+          <div class="pay-option-icon">G</div>
+          <div class="pay-option-info">
+            <div class="pay-option-name">Google Pay (UPI)</div>
+            <div class="pay-option-desc">Pay via GPay app · UPI: 9900127866@okbizaxis</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+        <div class="pay-option" id="pay-phonepe" onclick="selectPayment('phonepe')">
+          <div class="pay-option-icon">💜</div>
+          <div class="pay-option-info">
+            <div class="pay-option-name">PhonePe</div>
+            <div class="pay-option-desc">Pay via PhonePe · UPI: 9900127866@ybl</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+        <div class="pay-option" id="pay-upi" onclick="selectPayment('upi')">
+          <div class="pay-option-icon">🏦</div>
+          <div class="pay-option-info">
+            <div class="pay-option-name">Any UPI App</div>
+            <div class="pay-option-desc">Use any UPI app to scan or pay manually</div>
+          </div>
+          <div class="pay-radio"></div>
+        </div>
+      </div>
+      <div id="paymentAction"></div>
+      <div class="divider"></div>
+      <p style="font-size:0.76rem;color:var(--muted);text-align:center;line-height:1.6">After completing payment in your app, tap the button below to confirm your order.</p>
+      <button class="btn btn-primary" style="margin-top:14px" onclick="goToConfirmation()">✅ I've Paid – Confirm Order</button>
+      <button class="btn btn-secondary" onclick="goBack(2)">← Back to Menu</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: CONFIRMATION -->
+  <div class="screen" id="screen4">
+    <div class="card">
+      <div class="confirm-badge">✓</div>
+      <div class="confirm-title">Order Confirmed!</div>
+      <div class="confirm-sub">Thank you for ordering from Farmaish Restaurant.<br>Your food is being prepared 🌾</div>
+      <div class="order-details" id="confirmDetails"></div>
+      <a class="wa-btn" id="waLink" href="#" target="_blank">
+        <span>💬</span>
+        <span>Notify Restaurant on WhatsApp</span>
+      </a>
+      <button class="btn btn-secondary" onclick="restartOrder()">Place Another Order</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN LOGIN
+═══════════════════════════════════════════ -->
+<div id="adminLogin">
+  <div class="login-box">
+    <div class="login-title">Admin Login 🔐</div>
+    <div class="login-sub">Enter your credentials to access the restaurant dashboard.</div>
+    <div class="field"><label>Username</label><input type="text" id="admin-user" placeholder="admin" /></div>
+    <div class="field"><label>Password</label><input type="password" id="admin-pass" placeholder="••••••••" /></div>
+    <div class="error-msg" id="login-err">⚠ Incorrect username or password.</div>
+    <button class="btn btn-primary" style="margin-top:8px" onclick="doAdminLogin()">Login to Dashboard</button>
+    <button class="btn btn-secondary" onclick="closeAdminLogin()">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN PANEL
+═══════════════════════════════════════════ -->
+<div id="adminOverlay">
+  <div class="admin-header">
+    <div>
+      <div class="admin-logo">🌾 FARMAISH</div>
+    </div>
+    <span class="admin-badge">Admin Dashboard</span>
+    <button class="admin-close" onclick="closeAdmin()">✕ Exit Admin</button>
+  </div>
+  <div class="admin-nav">
+    <button class="admin-tab active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button class="admin-tab" onclick="switchTab('orders')">📋 Orders</button>
+    <button class="admin-tab" onclick="switchTab('menu')">🍽️ Menu</button>
+    <button class="admin-tab" onclick="switchTab('sales')">💰 Sales</button>
+    <button class="admin-tab" onclick="switchTab('customers')">👥 Customers</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- DASHBOARD -->
+    <div class="admin-panel active" id="tab-dashboard">
+      <div class="admin-grid" id="dashboardStats"></div>
+      <div class="admin-section-title">Recent Orders</div>
+      <div class="table-wrap"><div id="dashRecentOrders"></div></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="admin-panel" id="tab-orders">
+      <div class="admin-section-title">
+        All Orders
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="orderFilter" onchange="renderOrders()" style="width:auto;padding:7px 12px;font-size:0.8rem">
+            <option value="all">All Status</option>
+            <option value="New">New</option>
+            <option value="Preparing">Preparing</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap"><div id="ordersTableWrap"></div></div>
+    </div>
+
+    <!-- MENU MANAGEMENT -->
+    <div class="admin-panel" id="tab-menu">
+      <div class="admin-section-title">
+        Menu Items
+        <button class="btn btn-primary btn-sm" onclick="toggleAddForm()">+ Add New Item</button>
+      </div>
+      <div id="addItemForm" style="display:none">
+        <div class="add-item-form">
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold-light);margin-bottom:16px">Add New Menu Item</div>
+          <div class="form-row">
+            <div class="field"><label>Item Name</label><input type="text" id="new-name" placeholder="e.g. Chicken Tikka" /></div>
+            <div class="field"><label>Price (₹)</label><input type="text" id="new-price" placeholder="e.g. 250" /></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>Description</label><input type="text" id="new-desc" placeholder="Short description" /></div>
+            <div class="field"><label>Category</label>
+              <select id="new-cat">
+                <option value="Starters">🌿 Starters</option>
+                <option value="Main Course">🍛 Main Course</option>
+                <option value="Drinks & Sweets">🥤 Drinks & Sweets</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>Emoji Icon</label><input type="text" id="new-emoji" placeholder="e.g. 🍗" /></div>
+            <div class="field"><label>Type</label>
+              <select id="new-type">
+                <option value="veg">Veg</option>
+                <option value="nonveg">Non-Veg</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="addMenuItem()" style="margin-top:6px">Save Item</button>
+          <button class="btn btn-secondary" onclick="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+      <div id="adminMenuList" style="margin-top:14px"></div>
+    </div>
+
+    <!-- SALES -->
+    <div class="admin-panel" id="tab-sales">
+      <div class="admin-section-title">Sales Overview</div>
+      <div class="admin-grid" id="salesStats"></div>
+      <div style="font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">Revenue by Day (Last 7 Days)</div>
+      <div id="salesChart"></div>
+      <div class="divider"></div>
+      <div style="font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;margin-top:8px">Top Selling Items</div>
+      <div id="topItems"></div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="admin-panel" id="tab-customers">
+      <div class="admin-section-title">Customer Base</div>
+      <div style="margin-bottom:16px">
+        <input type="text" id="customerSearch" placeholder="🔍 Search by name or phone..." oninput="renderCustomers()" style="max-width:320px" />
+      </div>
+      <div id="customersList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA & CONSTANTS
+// ════════════════════════════════════════════════════
+const DELIVERY = 30;
+const WA_NUMBER = "919742645678";
+const GPAY_UPI = "9900127866@okbizaxis";
+const PHONEPE_UPI = "9900127866@ybl";
+const RESTAURANT = "FARMAISH RESTAURANT";
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "farmaish123";
+
+// Menu data (source of truth)
+let MENU = {
+  1: { name: "Farm Fresh Salad", price: 120, desc: "Seasonal greens, cherry tomatoes, cucumber, lemon dressing", emoji: "🥗", cat: "Starters", type: "veg", available: true },
+  2: { name: "Grilled Sweet Corn", price: 80, desc: "Butter-roasted corn, masala sprinkle, lime squeeze", emoji: "🌽", cat: "Starters", type: "veg", available: true },
+  3: { name: "Tandoori Chicken Starter", price: 220, desc: "Marinated chicken, smoky tandoor finish, mint chutney", emoji: "🍗", cat: "Starters", type: "nonveg", available: true },
+  4: { name: "Farmaish Dal Makhani", price: 180, desc: "Slow-cooked black lentils, butter, cream, served with naan", emoji: "🥘", cat: "Main Course", type: "veg", available: true },
+  5: { name: "Village Chicken Biryani", price: 280, desc: "Aromatic basmati rice, free-range chicken, farmer spices, raita", emoji: "🍚", cat: "Main Course", type: "nonveg", available: true },
+  6: { name: "Paneer Butter Masala + Roti", price: 240, desc: "Cottage cheese in rich tomato gravy, 4 whole wheat rotis", emoji: "🫓", cat: "Main Course", type: "veg", available: true },
+  7: { name: "Fresh Lassi", price: 70, desc: "Thick yogurt drink, sweet or salted, rose option", emoji: "🥛", cat: "Drinks & Sweets", type: "veg", available: true },
+  8: { name: "Gajar Halwa", price: 90, desc: "Slow-cooked carrot dessert, ghee, cashews, cardamom", emoji: "🍮", cat: "Drinks & Sweets", type: "veg", available: true },
+};
+
+// Orders storage (persists in localStorage)
+function loadOrders() {
+  try { return JSON.parse(localStorage.getItem('farmaish_orders') || '[]'); } catch { return []; }
+}
+function saveOrders(orders) {
+  localStorage.setItem('farmaish_orders', JSON.stringify(orders));
+}
+function loadMenuOverrides() {
+  try { return JSON.parse(localStorage.getItem('farmaish_menu') || 'null'); } catch { return null; }
+}
+function saveMenuOverrides() {
+  localStorage.setItem('farmaish_menu', JSON.stringify(MENU));
+}
+
+// Load persisted menu
+const savedMenu = loadMenuOverrides();
+if (savedMenu) MENU = savedMenu;
+
+let cart = {};
+let customer = {};
+let orderId = "";
+let selectedPayment = "gpay";
+let nextItemId = Math.max(...Object.keys(MENU).map(Number)) + 1;
+
+// ════════════════════════════════════════════════════
+// CUSTOMER FLOW
+// ════════════════════════════════════════════════════
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const s = document.getElementById('s' + i);
+    s.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+    s.querySelector('.step-num').textContent = i < n ? '✓' : i;
+  }
+}
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen' + n).classList.add('active');
+  setStep(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildMenuList() {
+  const categories = ["Starters", "Main Course", "Drinks & Sweets"];
+  const icons = { "Starters": "🌿", "Main Course": "🍛", "Drinks & Sweets": "🥤" };
+  let html = '';
+  categories.forEach(cat => {
+    const items = Object.entries(MENU).filter(([, v]) => v.cat === cat);
+    if (!items.length) return;
+    html += `<div class="section-label">${icons[cat]} ${cat}</div>`;
+    items.forEach(([id, item]) => {
+      const tag = item.type === 'veg'
+        ? '<span class="veg-tag">VEG</span>'
+        : '<span class="veg-tag nonveg-tag">NON-VEG</span>';
+      const unavail = !item.available ? '<div class="unavail-badge">Unavailable</div>' : '';
+      html += `
+        <div class="menu-item${!item.available ? ' unavailable' : ''}" id="item-${id}" onclick="toggleItem(${id})">
+          <div class="item-emoji">${item.emoji}</div>
+          <div class="item-info">
+            <div class="item-name">${item.name} ${tag}</div>
+            <div class="item-desc">${item.desc}</div>
+            <div class="qty-controls" id="qty-${id}" style="display:none" onclick="event.stopPropagation()">
+              <button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+              <span class="qty-num" id="qnum-${id}">1</span>
+              <button class="qty-btn" onclick="changeQty(${id},1)">+</button>
+            </div>
+          </div>
+          <div class="item-price">₹${item.price}</div>
+          <div class="item-check">✓</div>
+          ${unavail}
+        </div>`;
+    });
+  });
+  document.getElementById('menuList').innerHTML = html;
+}
+
+function goToMenu() {
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const addr = document.getElementById('inp-addr').value.trim();
+  if (!name || phone.length !== 10 || !/^\d{10}$/.test(phone) || !addr) {
+    document.getElementById('err1').classList.add('show'); return;
+  }
+  document.getElementById('err1').classList.remove('show');
+  customer = { name, phone, addr };
+  buildMenuList();
+  showScreen(2);
+}
+
+function toggleItem(id) {
+  if (cart[id]) {
+    delete cart[id];
+    document.getElementById('item-' + id).classList.remove('selected');
+    document.getElementById('qty-' + id).style.display = 'none';
+  } else {
+    cart[id] = 1;
+    document.getElementById('item-' + id).classList.add('selected');
+    document.getElementById('qty-' + id).style.display = 'flex';
+    document.getElementById('qnum-' + id).textContent = 1;
+  }
+  renderCart();
+}
+
+function changeQty(id, delta) {
+  if (!cart[id]) return;
+  cart[id] = Math.max(1, cart[id] + delta);
+  document.getElementById('qnum-' + id).textContent = cart[id];
+  renderCart();
+}
+
+function calcSubtotal() {
+  return Object.entries(cart).reduce((s, [id, qty]) => s + MENU[id].price * qty, 0);
+}
+
+function renderCart() {
+  const ids = Object.keys(cart);
+  const empty = document.getElementById('emptyCartMsg');
+  const rows = document.getElementById('cartRows');
+  const total = document.getElementById('cartTotal');
+  if (!ids.length) { empty.style.display = 'block'; rows.innerHTML = ''; total.style.display = 'none'; return; }
+  empty.style.display = 'none';
+  total.style.display = 'block';
+  rows.innerHTML = ids.map(id => `
+    <div class="summary-row">
+      <span>${MENU[id].name} × ${cart[id]}</span>
+      <span>₹${MENU[id].price * cart[id]}</span>
+    </div>`).join('');
+  const sub = calcSubtotal();
+  document.getElementById('subtotalAmt').textContent = '₹' + sub;
+  document.getElementById('totalAmt').textContent = '₹' + (sub + DELIVERY);
+}
+
+function goToPayment() {
+  if (!Object.keys(cart).length) { document.getElementById('err2').classList.add('show'); return; }
+  document.getElementById('err2').classList.remove('show');
+  orderId = 'FRM' + Date.now().toString().slice(-6);
+  const sub = calcSubtotal();
+  const total = sub + DELIVERY;
+  const items = Object.entries(cart).map(([id, qty]) =>
+    `<div class="summary-row"><span>${MENU[id].name} × ${qty}</span><span>₹${MENU[id].price * qty}</span></div>`
+  ).join('');
+  document.getElementById('paymentOrderSummary').innerHTML = `
+    <div style="font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)">Order #${orderId}</div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:12px">For: ${customer.name} · 📱 ${customer.phone}</div>
+    ${items}
+    <div class="summary-row"><span class="summary-label">Delivery</span><span>₹${DELIVERY}</span></div>
+    <div class="summary-row"><span class="summary-label" style="font-weight:600;color:var(--text)">Total Payable</span><span class="summary-total">₹${total}</span></div>`;
+  selectPayment('gpay');
+  showScreen(3);
+}
+
+function selectPayment(method) {
+  selectedPayment = method;
+  ['gpay','phonepe','upi'].forEach(m => document.getElementById('pay-'+m).classList.remove('selected'));
+  document.getElementById('pay-'+method).classList.add('selected');
+  const total = calcSubtotal() + DELIVERY;
+  const note = encodeURIComponent(`Farmaish Order #${orderId} - ${customer.name}`);
+  let html = '';
+  if (method === 'gpay') {
+    html = `
+      <div class="upi-box">
+        <div style="font-size:2rem">G</div>
+        <div class="upi-id">${GPAY_UPI}</div>
+        <div class="upi-note">Google Pay · FARMAISH RESTAURANT</div>
+      </div>
+      <button class="btn-gpay" onclick="openUPI('gpay')">
+        <span style="font-size:1.3rem">G</span>
+        <span>Pay ₹${total} with Google Pay</span>
+      </button>`;
+  } else if (method === 'phonepe') {
+    html = `
+      <div class="upi-box" style="border-color:var(--phonepe)">
+        <div style="font-size:2rem">💜</div>
+        <div class="upi-id" style="color:#b37dff">${PHONEPE_UPI}</div>
+        <div class="upi-note">PhonePe · FARMAISH RESTAURANT</div>
+      </div>
+      <button class="btn-phonepe" onclick="openUPI('phonepe')">
+        <span>💜</span>
+        <span>Pay ₹${total} with PhonePe</span>
+      </button>`;
+  } else {
+    html = `
+      <div class="upi-box">
+        <div style="font-size:2rem">🏦</div>
+        <div class="upi-id">${GPAY_UPI}</div>
+        <div class="upi-note">Send ₹${total} to this UPI ID from any app</div>
+      </div>`;
+  }
+  document.getElementById('paymentAction').innerHTML = html;
+}
+
+function openUPI(app) {
+  const total = calcSubtotal() + DELIVERY;
+  const note = encodeURIComponent(`Farmaish Order #${orderId} - ${customer.name}`);
+  const upiId = app === 'phonepe' ? PHONEPE_UPI : GPAY_UPI;
+  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(RESTAURANT)}&am=${total}&cu=INR&tn=${note}`;
+  if (app === 'gpay') {
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const intentUrl = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(RESTAURANT)}&am=${total}&cu=INR&tn=${note}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+    window.location.href = isAndroid ? intentUrl : upiUrl;
+  } else if (app === 'phonepe') {
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const intentUrl = `intent://pay?pa=${upiId}&pn=${encodeURIComponent(RESTAURANT)}&am=${total}&cu=INR&tn=${note}#Intent;scheme=upi;package=com.phonepe.app;end`;
+    window.location.href = isAndroid ? intentUrl : upiUrl;
+  }
+}
+
+function goToConfirmation() {
+  const sub = calcSubtotal();
+  const total = sub + DELIVERY;
+  const itemList = Object.entries(cart).map(([id, qty]) => `${MENU[id].name} × ${qty}`).join(', ');
+  document.getElementById('confirmDetails').innerHTML = `
+    <div class="detail-row"><span>Order ID</span><span>#${orderId}</span></div>
+    <div class="detail-row"><span>Customer</span><span>${customer.name}</span></div>
+    <div class="detail-row"><span>Mobile</span><span>${customer.phone}</span></div>
+    <div class="detail-row"><span>Delivery to</span><span style="max-width:200px;text-align:right">${customer.addr}</span></div>
+    <div class="detail-row"><span>Items</span><span style="max-width:200px;text-align:right">${itemList}</span></div>
+    <div class="detail-row"><span>Payment</span><span>${selectedPayment === 'gpay' ? 'Google Pay' : selectedPayment === 'phonepe' ? 'PhonePe' : 'UPI'}</span></div>
+    <div class="detail-row"><span>Amount</span><span style="color:var(--gold);font-weight:700">₹${total}</span></div>`;
+
+  // Save order
+  const orders = loadOrders();
+  orders.unshift({
+    id: orderId,
+    customer: customer.name,
+    phone: customer.phone,
+    address: customer.addr,
+    items: Object.entries(cart).map(([id, qty]) => ({ name: MENU[id].name, qty, price: MENU[id].price })),
+    subtotal: sub,
+    delivery: DELIVERY,
+    total,
+    payment: selectedPayment,
+    status: 'New',
+    time: new Date().toISOString()
+  });
+  saveOrders(orders);
+
+  // WhatsApp
+  const waMsg = encodeURIComponent(
+    `🌾 *New Order - FARMAISH RESTAURANT*\n\n` +
+    `*Order ID:* #${orderId}\n*Customer:* ${customer.name}\n*Mobile:* ${customer.phone}\n*Address:* ${customer.addr}\n\n` +
+    `*Items:*\n` +
+    Object.entries(cart).map(([id, qty]) => `• ${MENU[id].name} × ${qty} = ₹${MENU[id].price * qty}`).join('\n') +
+    `\n\n*Delivery:* ₹${DELIVERY}\n*Total Paid:* ₹${total}\n*Payment:* ${selectedPayment === 'gpay' ? 'Google Pay' : selectedPayment === 'phonepe' ? 'PhonePe' : 'UPI'}`
+  );
+  document.getElementById('waLink').href = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+  showScreen(4);
+}
+
+function goBack(to) { showScreen(to); }
+
+function restartOrder() {
+  cart = {}; customer = {}; orderId = '';
+  document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.qty-controls').forEach(el => el.style.display = 'none');
+  ['inp-name','inp-phone','inp-addr'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  renderCart();
+  showScreen(1);
+}
+
+// ════════════════════════════════════════════════════
+// ADMIN LOGIN
+// ════════════════════════════════════════════════════
+function showAdminLogin() {
+  document.getElementById('adminLogin').classList.add('active');
+}
+function closeAdminLogin() {
+  document.getElementById('adminLogin').classList.remove('active');
+  document.getElementById('login-err').classList.remove('show');
+}
+function doAdminLogin() {
+  const u = document.getElementById('admin-user').value.trim();
+  const p = document.getElementById('admin-pass').value.trim();
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    closeAdminLogin();
+    openAdmin();
+  } else {
+    document.getElementById('login-err').classList.add('show');
+  }
+}
+document.getElementById('admin-pass').addEventListener('keypress', e => { if(e.key==='Enter') doAdminLogin(); });
+
+// ════════════════════════════════════════════════════
+// ADMIN PANEL
+// ════════════════════════════════════════════════════
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.add('active');
+  switchTab('dashboard');
+}
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('active');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['dashboard','orders','menu','sales','customers'];
+  const idx = tabs.indexOf(tab);
+  document.querySelectorAll('.admin-tab')[idx].classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'dashboard') renderDashboard();
+  if (tab === 'orders') renderOrders();
+  if (tab === 'menu') renderAdminMenu();
+  if (tab === 'sales') renderSales();
+  if (tab === 'customers') renderCustomers();
+}
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  const orders = loadOrders();
+  const today = new Date().toDateString();
+  const todayOrders = orders.filter(o => new Date(o.time).toDateString() === today);
+  const todayRevenue = todayOrders.reduce((s, o) => s + o.total, 0);
+  const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
+  const customers = [...new Set(orders.map(o => o.phone))];
+  const newOrders = orders.filter(o => o.status === 'New');
+  document.getElementById('dashboardStats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Today's Orders</div><div class="stat-value">${todayOrders.length}</div><div class="stat-sub">${newOrders.length} pending</div></div>
+    <div class="stat-card"><div class="stat-label">Today's Revenue</div><div class="stat-value">₹${todayRevenue}</div><div class="stat-sub">Delivery included</div></div>
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value">₹${totalRevenue}</div><div class="stat-sub">All time</div></div>
+    <div class="stat-card"><div class="stat-label">Total Customers</div><div class="stat-value">${customers.length}</div><div class="stat-sub">Unique phones</div></div>`;
+  document.getElementById('dashRecentOrders').innerHTML = buildOrdersTable(orders.slice(0, 5));
+}
+
+// ── ORDERS ──
+function renderOrders() {
+  const orders = loadOrders();
+  const filter = document.getElementById('orderFilter').value;
+  const filtered = filter === 'all' ? orders : orders.filter(o => o.status === filter);
+  document.getElementById('ordersTableWrap').innerHTML = buildOrdersTable(filtered, true);
+}
+
+function buildOrdersTable(orders, showActions = false) {
+  if (!orders.length) return '<div class="no-data">No orders found.</div>';
+  const rows = orders.map(o => {
+    const time = new Date(o.time).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const items = o.items.map(i => `${i.name} ×${i.qty}`).join(', ');
+    const badge = `<span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span>`;
+    const actions = showActions ? `
+      <div class="action-btns" style="margin-top:6px">
+        <button class="btn btn-primary btn-sm" onclick="updateStatus('${o.id}','Preparing')">Preparing</button>
+        <button class="btn btn-sm" style="background:var(--green);color:#fff;padding:8px 14px;border-radius:8px;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border:none;cursor:pointer" onclick="updateStatus('${o.id}','Delivered')">Delivered</button>
+        <button class="btn btn-danger btn-sm" onclick="updateStatus('${o.id}','Cancelled')">Cancel</button>
+      </div>` : '';
+    return `<tr>
+      <td><strong>#${o.id}</strong><br><span style="color:var(--muted);font-size:0.76rem">${time}</span></td>
+      <td><strong>${o.customer}</strong><br><span style="color:var(--muted);font-size:0.76rem">${o.phone}</span></td>
+      <td style="max-width:180px;font-size:0.8rem;color:var(--muted)">${items}</td>
+      <td><strong style="color:var(--gold)">₹${o.total}</strong></td>
+      <td>${badge}${actions}</td>
+    </tr>`;
+  }).join('');
+  return `<table class="orders-table">
+    <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function updateStatus(ordId, status) {
+  const orders = loadOrders();
+  const o = orders.find(x => x.id === ordId);
+  if (o) { o.status = status; saveOrders(orders); renderOrders(); }
+}
+
+// ── MENU MANAGEMENT ──
+function renderAdminMenu() {
+  const cats = ["Starters", "Main Course", "Drinks & Sweets"];
+  const catIcons = { "Starters": "🌿", "Main Course": "🍛", "Drinks & Sweets": "🥤" };
+  let html = '';
+  cats.forEach(cat => {
+    const items = Object.entries(MENU).filter(([, v]) => v.cat === cat);
+    if (!items.length) return;
+    html += `<div class="section-label" style="margin-top:20px">${catIcons[cat]} ${cat}</div>`;
+    items.forEach(([id, item]) => {
+      html += `
+        <div class="admin-menu-item">
+          <div class="item-emoji">${item.emoji}</div>
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price-small">₹${item.price} · ${item.type === 'veg' ? '🟢 Veg' : '🔴 Non-Veg'}</div>
+            <div style="font-size:0.73rem;color:var(--muted);margin-top:2px">${item.desc}</div>
+          </div>
+          <label class="toggle-switch" title="${item.available ? 'Available' : 'Unavailable'}">
+            <input type="checkbox" ${item.available ? 'checked' : ''} onchange="toggleAvailability(${id}, this.checked)" />
+            <span class="toggle-slider"></span>
+          </label>
+          <button class="btn btn-danger btn-sm" onclick="deleteMenuItem(${id})" style="margin-left:8px">🗑</button>
+        </div>`;
+    });
+  });
+  document.getElementById('adminMenuList').innerHTML = html;
+}
+
+function toggleAvailability(id, val) {
+  MENU[id].available = val;
+  saveMenuOverrides();
+}
+
+function deleteMenuItem(id) {
+  if (!confirm(`Delete "${MENU[id].name}"?`)) return;
+  delete MENU[id];
+  saveMenuOverrides();
+  renderAdminMenu();
+}
+
+function toggleAddForm() {
+  const f = document.getElementById('addItemForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+function addMenuItem() {
+  const name = document.getElementById('new-name').value.trim();
+  const price = parseInt(document.getElementById('new-price').value.trim());
+  const desc = document.getElementById('new-desc').value.trim();
+  const cat = document.getElementById('new-cat').value;
+  const emoji = document.getElementById('new-emoji').value.trim() || '🍽️';
+  const type = document.getElementById('new-type').value;
+  if (!name || !price || !desc) { alert('Please fill in all fields.'); return; }
+  MENU[nextItemId] = { name, price, desc, cat, emoji, type, available: true };
+  nextItemId++;
+  saveMenuOverrides();
+  renderAdminMenu();
+  toggleAddForm();
+  ['new-name','new-price','new-desc','new-emoji'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── SALES ──
+function renderSales() {
+  const orders = loadOrders().filter(o => o.status !== 'Cancelled');
+  const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
+  const avgOrder = orders.length ? Math.round(totalRevenue / orders.length) : 0;
+  const today = new Date().toDateString();
+  const todayRev = orders.filter(o => new Date(o.time).toDateString() === today).reduce((s, o) => s + o.total, 0);
+
+  document.getElementById('salesStats').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value">₹${totalRevenue}</div></div>
+    <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value">${orders.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Order Value</div><div class="stat-value">₹${avgOrder}</div></div>
+    <div class="stat-card"><div class="stat-label">Today's Revenue</div><div class="stat-value">₹${todayRev}</div></div>`;
+
+  // Last 7 days chart
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const label = d.toLocaleDateString('en-IN', { weekday: 'short' });
+    const rev = orders.filter(o => new Date(o.time).toDateString() === d.toDateString()).reduce((s, o) => s + o.total, 0);
+    days.push({ label, rev });
+  }
+  const maxRev = Math.max(...days.map(d => d.rev), 1);
+  document.getElementById('salesChart').innerHTML = days.map(d => `
+    <div class="chart-bar-row">
+      <div class="chart-bar-label">${d.label}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:${Math.max(d.rev/maxRev*100,2)}%">${d.rev > 0 ? '₹'+d.rev : ''}</div>
+      </div>
+      <div class="chart-bar-amount">₹${d.rev}</div>
+    </div>`).join('');
+
+  // Top items
+  const itemCount = {};
+  orders.forEach(o => o.items.forEach(i => {
+    itemCount[i.name] = (itemCount[i.name] || 0) + i.qty;
+  }));
+  const sorted = Object.entries(itemCount).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const maxQty = sorted[0]?.[1] || 1;
+  document.getElementById('topItems').innerHTML = sorted.length ? sorted.map(([name, qty]) => `
+    <div class="chart-bar-row">
+      <div class="chart-bar-label" style="width:120px;text-align:left;font-size:0.75rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${name}</div>
+      <div class="chart-bar-track" style="background:rgba(95,37,159,0.15)">
+        <div class="chart-bar-fill" style="width:${qty/maxQty*100}%;background:linear-gradient(90deg,var(--phonepe),var(--phonepe-light))">${qty} sold</div>
+      </div>
+      <div class="chart-bar-amount">${qty}x</div>
+    </div>`).join('') : '<div class="no-data">No sales data yet.</div>';
+}
+
+// ── CUSTOMERS ──
+function renderCustomers() {
+  const orders = loadOrders();
+  const search = (document.getElementById('customerSearch')?.value || '').toLowerCase();
+  const map = {};
+  orders.forEach(o => {
+    if (!map[o.phone]) map[o.phone] = { name: o.customer, phone: o.phone, orders: 0, spend: 0, last: o.time };
+    map[o.phone].orders++;
+    map[o.phone].spend += o.total;
+    if (new Date(o.time) > new Date(map[o.phone].last)) map[o.phone].last = o.time;
+  });
+  let customers = Object.values(map).sort((a, b) => b.spend - a.spend);
+  if (search) customers = customers.filter(c => c.name.toLowerCase().includes(search) || c.phone.includes(search));
+  if (!customers.length) { document.getElementById('customersList').innerHTML = '<div class="no-data">No customers found.</div>'; return; }
+  document.getElementById('customersList').innerHTML = customers.map(c => {
+    const initial = c.name.charAt(0).toUpperCase();
+    const lastDate = new Date(c.last).toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+    return `<div class="customer-card">
+      <div class="customer-avatar">${initial}</div>
+      <div class="customer-info">
+        <div class="customer-name">${c.name}</div>
+        <div class="customer-meta">📱 ${c.phone} · Last order: ${lastDate}</div>
+      </div>
+      <div class="customer-stats">
+        <div class="customer-spend">₹${c.spend}</div>
+        <div>${c.orders} order${c.orders > 1 ? 's' : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
